@@ -83,6 +83,17 @@ h1 span{color:var(--accent)}
 .chip{position:absolute;left:12px;top:12px;background:var(--surface);color:var(--ink);border-radius:999px;padding:5px 12px 5px 8px;
   font-weight:800;font-size:.85rem;display:flex;align-items:center;gap:6px;box-shadow:0 2px 8px rgba(0,0,0,.12)}
 .chip i{font-style:normal;font-size:1.05rem}
+.lvl{position:absolute;right:12px;bottom:12px;background:var(--surface);color:var(--ink);border-radius:14px;padding:6px 11px;
+  box-shadow:0 2px 8px rgba(0,0,0,.12);display:flex;flex-direction:column;line-height:1.15;border-left:5px solid var(--tier,#1f9d55)}
+.lvl b{font:800 1.05rem var(--display)}
+.lvl span{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--tier,#1f9d55);filter:brightness(1.05)}
+.lvl small{font-size:.68rem;font-weight:700;color:var(--muted)}
+.levelup{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);background:var(--tier,#ff6b3d);color:#fff;
+  font:800 1.7rem var(--display);padding:8px 22px;border-radius:18px;box-shadow:0 8px 24px rgba(0,0,0,.25);pointer-events:none;
+  white-space:nowrap;animation:lvlpop 2.2s ease forwards}
+@keyframes lvlpop{0%{transform:translate(-50%,-50%) scale(.4);opacity:0}15%{transform:translate(-50%,-50%) scale(1.12);opacity:1}
+  25%{transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{transform:translate(-50%,-62%);opacity:0}}
+.result .up{color:var(--ink);font-size:1rem}
 .hearts{position:absolute;right:12px;top:12px;display:flex;gap:3px;background:var(--surface);border-radius:999px;padding:6px 9px;box-shadow:0 2px 8px rgba(0,0,0,.12)}
 .hearts svg{width:16px;height:16px;transition:transform .3s}
 .hearts svg path{fill:var(--bad);transition:fill .3s}
@@ -246,6 +257,8 @@ select.btn{appearance:none;-webkit-appearance:none;padding-right:16px}
     <canvas id="confetti"></canvas>
     <div class="chip"><i id="catIcon"></i><span id="cat">—</span></div>
     <div class="hearts" id="hearts" aria-label="Chances restantes"></div>
+    <div class="lvl" id="lvl"><b id="lvlNum">Nível 1</b><span id="lvlTier">Fácil</span><small id="lvlNext"></small></div>
+    <div class="levelup" id="levelUp" hidden></div>
   </div>
 
   <div class="msg" id="msg" aria-live="polite"></div>
@@ -253,7 +266,7 @@ select.btn{appearance:none;-webkit-appearance:none;padding-right:16px}
 
   <div class="actions" id="actions">
     <select class="btn" id="catSel" aria-label="Escolher categoria"></select>
-    <button class="btn" id="hintBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg>Dica</button>
+    <button class="btn" id="hintBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg><span id="hintTxt">Dica</span></button>
     <button class="btn" id="newBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg>Trocar</button>
   </div>
 
@@ -270,10 +283,11 @@ select.btn{appearance:none;-webkit-appearance:none;padding-right:16px}
     <h2 id="helpTitle">Como jogar</h2>
     <ul class="steps">
       <li><span class="n">1</span>Toque nas letras para adivinhar a palavra escondida.</li>
-      <li><span class="n">2</span>Cada letra errada desenha uma parte do boneco. Você tem 6 chances.</li>
+      <li><span class="n">2</span>Cada letra errada desenha uma parte do boneco. Os corações mostram quantas chances restam.</li>
       <li><span class="n">3</span>Não se preocupe com acentos: o A já mostra Á, Ã e Â, e o C mostra Ç.</li>
-      <li><span class="n">4</span>Travou? A lâmpada dá uma dica, mas custa uma chance.</li>
-      <li><span class="n">5</span>O alto-falante no topo liga e desliga os sons.</li>
+      <li><span class="n">4</span>Cada vitória sobe um nível: Fácil, Médio, Difícil e Mestre. Quanto mais alto, mais difíceis as palavras, menos chances e mais pontos.</li>
+      <li><span class="n">5</span>A lâmpada dá uma dica: grátis no Fácil, custa uma chance no Médio e some a partir do Difícil.</li>
+      <li><span class="n">6</span>O alto-falante no topo liga e desliga os sons.</li>
     </ul>
     <button class="btn primary" id="helpClose">Começar a jogar</button>
   </div>
@@ -285,7 +299,7 @@ select.btn{appearance:none;-webkit-appearance:none;padding-right:16px}
       <h2 id="rankTitle">Ranking</h2>
       <button class="round" id="rankClose" aria-label="Fechar">×</button>
     </div>
-    <p class="rank-rule">Vitória vale 10 pontos, mais 5 por coração que sobrou e 5 se não usou dica.</p>
+    <p class="rank-rule">Vitória vale 10 pontos, mais 5 por coração que sobrou e 5 sem dica. O total é multiplicado pelo nível: Fácil ×1, Médio ×2, Difícil ×3, Mestre ×4.</p>
     <ol class="rank-list" id="rankList"></ol>
     <p class="rank-note" id="rankNote"></p>
   </div>
@@ -307,13 +321,23 @@ select.btn{appearance:none;-webkit-appearance:none;padding-right:16px}
 <script src="firebase-config.js?v=2"></script>
 <script>
 const WORDS = {
-  "Animais": {icon:"🐾", list:[["CACHORRO","Melhor amigo do homem"],["ELEFANTE","Tem tromba"],["JACARÉ","Réptil do Pantanal"],["TAMANDUÁ","Come formigas"],["CAPIVARA","Maior roedor do mundo"],["BORBOLETA","Já foi lagarta"],["TUCANO","Bico grande e colorido"],["GIRAFA","Pescoço comprido"],["PINGUIM","Ave que não voa e nada bem"],["TARTARUGA","Carrega a casa nas costas"],["ARARA AZUL","Ave símbolo do cerrado"],["MICO LEÃO DOURADO","Primata da Mata Atlântica"],["CAVALO","Tem crina e ferradura"],["CORUJA","Vira a cabeça e caça à noite"],["GOLFINHO","Mamífero brincalhão do mar"]]},
-  "Frutas": {icon:"🍍", list:[["ABACAXI","Tem coroa"],["MARACUJÁ","Bom para acalmar"],["JABUTICABA","Nasce grudada no tronco"],["MELANCIA","Verde por fora, vermelha por dentro"],["GOIABA","Vira doce em barra"],["CAJU","A castanha fica do lado de fora"],["AÇAÍ","Vem do Pará"],["PITANGA","Pequena e cheia de gomos"],["ACEROLA","Muita vitamina C"],["CUPUAÇU","Parente do cacau"],["MORANGO","Vermelho com sementes por fora"],["BANANA","Vem em cacho"]]},
-  "Países": {icon:"🌎", list:[["BRASIL","Pentacampeão"],["PORTUGAL","Também fala português"],["ARGENTINA","Vizinho do tango"],["JAPÃO","Terra do sol nascente"],["AUSTRÁLIA","Tem cangurus"],["EGITO","Pirâmides"],["CANADÁ","Folha de bordo na bandeira"],["MOÇAMBIQUE","País lusófono na África"],["ITÁLIA","Formato de bota"],["NOVA ZELÂNDIA","Terra dos kiwis"],["MÉXICO","Tacos e mariachis"],["FRANÇA","Torre Eiffel"]]},
-  "Profissões": {icon:"👷", list:[["PROFESSOR","Ensina"],["BOMBEIRO","Apaga incêndios"],["ENFERMEIRA","Cuida de pacientes"],["ADVOGADO","Defende no tribunal"],["JORNALISTA","Escreve notícias"],["ELETRICISTA","Mexe com fios"],["CARPINTEIRO","Trabalha com madeira"],["VETERINÁRIO","Médico dos bichos"],["ASTRONAUTA","Vai ao espaço"],["PADEIRO","Acorda cedo para o pão"],["DENTISTA","Cuida dos dentes"],["COZINHEIRO","Faz a comida"]]},
-  "Objetos": {icon:"🎒", list:[["GUARDA-CHUVA","Útil em dia de temporal"],["GELADEIRA","Mantém frio"],["TESOURA","Corta papel"],["TRAVESSEIRO","Fica na cama"],["ESPELHO","Mostra seu reflexo"],["CADERNO","Onde você escreve"],["LIQUIDIFICADOR","Faz suco e vitamina"],["VASSOURA","Varre o chão"],["RELÓGIO","Marca as horas"],["MOCHILA","Vai nas costas"],["BICICLETA","Duas rodas e pedal"],["LANTERNA","Ilumina no escuro"]]}
+  "Animais": {icon:"🐾", list:[["CACHORRO", "Melhor amigo do homem"], ["ELEFANTE", "Tem tromba"], ["JACARÉ", "Réptil do Pantanal"], ["TAMANDUÁ", "Come formigas"], ["CAPIVARA", "Maior roedor do mundo"], ["BORBOLETA", "Já foi lagarta"], ["TUCANO", "Bico grande e colorido"], ["GIRAFA", "Pescoço comprido"], ["PINGUIM", "Ave que não voa e nada bem"], ["TARTARUGA", "Carrega a casa nas costas"], ["ARARA AZUL", "Ave símbolo do cerrado"], ["MICO LEÃO DOURADO", "Primata da Mata Atlântica"], ["CAVALO", "Tem crina e ferradura"], ["CORUJA", "Vira a cabeça e caça à noite"], ["GOLFINHO", "Mamífero brincalhão do mar"], ["GATO", "Mia e caça ratos"], ["PATO", "Faz quá-quá"], ["VACA", "Dá leite"], ["SAPO", "Pula na lagoa e coaxa"], ["LEÃO", "Rei da selva"], ["URSO", "Hiberna no inverno"], ["RATO", "Adora queijo"], ["ORNITORRINCO", "Mamífero que bota ovos"], ["HIPOPÓTAMO", "Cavalo do rio"], ["RINOCERONTE", "Tem chifre no nariz"], ["BICHO-PREGUIÇA", "Vive pendurado e bem devagar"], ["CAMALEÃO", "Muda de cor"]]},
+  "Frutas": {icon:"🍍", list:[["ABACAXI", "Tem coroa"], ["MARACUJÁ", "Bom para acalmar"], ["JABUTICABA", "Nasce grudada no tronco"], ["MELANCIA", "Verde por fora, vermelha por dentro"], ["GOIABA", "Vira doce em barra"], ["CAJU", "A castanha fica do lado de fora"], ["AÇAÍ", "Vem do Pará"], ["PITANGA", "Pequena e cheia de gomos"], ["ACEROLA", "Muita vitamina C"], ["CUPUAÇU", "Parente do cacau"], ["MORANGO", "Vermelho com sementes por fora"], ["BANANA", "Vem em cacho"], ["UVA", "Vira vinho"], ["PERA", "Formato de lâmpada"], ["KIWI", "Peludinha por fora, verde por dentro"], ["MANGA", "Também é parte da camisa"], ["CAQUI", "Laranja, mole e bem doce"], ["LIMÃO", "Azedo, vai na caipirinha"], ["FIGO", "Doce em calda de festa junina"], ["CARAMBOLA", "Cortada vira estrela"], ["FRAMBOESA", "Frutinha vermelha cheia de gomos"], ["GRAVIOLA", "Verde com espinhos moles"], ["TANGERINA", "Também chamada de mexerica"], ["JACA", "Fruta enorme e grudenta"]]},
+  "Países": {icon:"🌎", list:[["BRASIL", "Pentacampeão"], ["PORTUGAL", "Também fala português"], ["ARGENTINA", "Vizinho do tango"], ["JAPÃO", "Terra do sol nascente"], ["AUSTRÁLIA", "Tem cangurus"], ["EGITO", "Pirâmides"], ["CANADÁ", "Folha de bordo na bandeira"], ["MOÇAMBIQUE", "País lusófono na África"], ["ITÁLIA", "Formato de bota"], ["NOVA ZELÂNDIA", "Terra dos kiwis"], ["MÉXICO", "Tacos e mariachis"], ["FRANÇA", "Torre Eiffel"], ["PERU", "Também é nome de ave"], ["CHILE", "País comprido e estreito"], ["CUBA", "Ilha do Caribe"], ["CHINA", "Grande Muralha"], ["ÍNDIA", "Taj Mahal"], ["GRÉCIA", "Berço das Olimpíadas"], ["ALEMANHA", "Tetracampeã de futebol"], ["MARROCOS", "Norte da África, Casablanca"], ["INGLATERRA", "Big Ben"], ["ESTADOS UNIDOS", "Estátua da Liberdade"], ["ÁFRICA DO SUL", "Sediou a Copa de 2010"], ["COREIA DO SUL", "Terra do K-pop"]]},
+  "Profissões": {icon:"👷", list:[["PROFESSOR", "Ensina"], ["BOMBEIRO", "Apaga incêndios"], ["ENFERMEIRA", "Cuida de pacientes"], ["ADVOGADO", "Defende no tribunal"], ["JORNALISTA", "Escreve notícias"], ["ELETRICISTA", "Mexe com fios"], ["CARPINTEIRO", "Trabalha com madeira"], ["VETERINÁRIO", "Médico dos bichos"], ["ASTRONAUTA", "Vai ao espaço"], ["PADEIRO", "Acorda cedo para o pão"], ["DENTISTA", "Cuida dos dentes"], ["COZINHEIRO", "Faz a comida"], ["MÉDICO", "Atende no consultório"], ["PILOTO", "Comanda o avião"], ["JUIZ", "Dá a sentença"], ["ATOR", "Trabalha em novelas e filmes"], ["MOTORISTA", "Dirige para os outros"], ["PEDREIRO", "Levanta paredes"], ["ARQUITETO", "Desenha casas e prédios"], ["FOTÓGRAFO", "Vive clicando"], ["PROGRAMADOR", "Escreve códigos"], ["FISIOTERAPEUTA", "Ajuda a recuperar os movimentos"], ["OFTALMOLOGISTA", "Médico dos olhos"], ["GARÇOM", "Serve as mesas"]]},
+  "Objetos": {icon:"🎒", list:[["GUARDA-CHUVA", "Útil em dia de temporal"], ["GELADEIRA", "Mantém frio"], ["TESOURA", "Corta papel"], ["TRAVESSEIRO", "Fica na cama"], ["ESPELHO", "Mostra seu reflexo"], ["CADERNO", "Onde você escreve"], ["LIQUIDIFICADOR", "Faz suco e vitamina"], ["VASSOURA", "Varre o chão"], ["RELÓGIO", "Marca as horas"], ["MOCHILA", "Vai nas costas"], ["BICICLETA", "Duas rodas e pedal"], ["LANTERNA", "Ilumina no escuro"], ["COPO", "Serve para beber água"], ["MESA", "Onde se faz a refeição"], ["CAMA", "Onde se dorme"], ["LÁPIS", "Escreve e dá para apagar"], ["SOFÁ", "Assento da sala"], ["CHAVE", "Abre a porta"], ["TELEVISÃO", "Passa novela e futebol"], ["COMPUTADOR", "Tem teclado e mouse"], ["VENTILADOR", "Refresca no calor"], ["MICRO-ONDAS", "Esquenta comida rápido"], ["GUARDA-ROUPA", "Onde ficam as roupas"], ["PANELA", "Vai ao fogo"]]}
 };
-const MAX = 6;
+const TIERS = [
+  {name:"Fácil",   from:1,  max:8, mult:1, hint:"free", diff:0, color:"#1f9d55"},
+  {name:"Médio",   from:4,  max:6, mult:2, hint:"cost", diff:1, color:"#d98a00"},
+  {name:"Difícil", from:7,  max:5, mult:3, hint:"none", diff:2, color:"#e5484d"},
+  {name:"Mestre",  from:10, max:4, mult:4, hint:"none", diff:2, color:"#8b5cf6"}
+];
+const tierOf = lv => TIERS.filter(t=>lv>=t.from).pop();
+const tier = () => tierOf(stats.level);
+function wordLevel(w){ const p=norm(w).replace(/[^A-Z]/g,""); const u=new Set(p).size;
+  if(u<=5 && p.length<=7) return 0; if(u>=8 || p.length>=11) return 2; return 1; }
+const recent = [];
 const norm = s => s.normalize("NFD").replace(/[̀-ͯ]/g,"");
 const $ = id => document.getElementById(id);
 const parts = [...document.querySelectorAll(".part")].sort((a,b)=>a.dataset.i-b.dataset.i);
@@ -362,6 +386,7 @@ const snd = (()=>{
       [2093,2637,3136].forEach((f,i)=>tone(f,.55+i*.08,.3,{vol:.05})); },
     lose(){ [392,370,349.2].forEach((f,i)=>tone(f,i*.32,.3,{type:"sawtooth",vol:.07}));
       tone(329.6,.96,.9,{type:"sawtooth",vol:.07,to:300}); buzz([100,80,200]); },
+    levelUp(){ [659.25,783.99,987.77,1318.5].forEach((f,i)=>tone(f,i*.08,.18,{type:"square",vol:.06})); tone(1975.5,.34,.4,{vol:.08}); },
     get on(){ return on; },
     toggle(){ on=!on; store.set("forca-sound",on); paint(); if(on){ unlock(); setTimeout(()=>api.good(1),30);} }
   };
@@ -372,7 +397,7 @@ const snd = (()=>{
 })();
 
 let st = {};
-let stats = Object.assign({points:0,wins:0,games:0,streak:0,best:0}, store.get("forca-stats",{}));
+let stats = Object.assign({points:0,wins:0,games:0,streak:0,best:0,level:1}, store.get("forca-stats",{}));
 
 /* nome do aparelho */
 function deviceGuess(){
@@ -417,7 +442,7 @@ const FACES = {
 function setFace(){
   let f = "calm";
   if(st.state==="win") f="happy"; else if(st.state==="lose") f="dead";
-  else if(st.errors>=4) f="scared"; else if(st.errors>=2) f="meh";
+  else if(st.errors/st.max>=.6) f="scared"; else if(st.errors/st.max>=.3) f="meh";
   $("face").innerHTML = FACES[f];
 }
 
@@ -443,19 +468,27 @@ document.addEventListener("keydown", e=>{
 
 function pick(){
   const cats = sel.value==="*" ? Object.keys(WORDS) : [sel.value];
-  let cat,item,n=0;
-  do{ cat=cats[Math.floor(Math.random()*cats.length)]; const L=WORDS[cat].list; item=L[Math.floor(Math.random()*L.length)]; }
-  while(item[0]===st.word && n++<10);
-  return {cat,word:item[0],hint:item[1]};
+  const pool = cats.flatMap(c=>WORDS[c].list.map(x=>({cat:c, word:x[0], hint:x[1], lv:wordLevel(x[0])})));
+  const want = tier().diff;
+  for(const d of [want, want-1, want+1, want-2, want+2]){
+    let opts = pool.filter(x=>x.lv===d && !recent.includes(x.word));
+    if(!opts.length) opts = pool.filter(x=>x.lv===d && x.word!==st.word);
+    if(opts.length){ const x = opts[Math.floor(Math.random()*opts.length)];
+      recent.push(x.word); if(recent.length>15) recent.shift(); return x; }
+  }
+  return pool[0];
 }
 
 function newGame(){
   snd.start();
   const p = pick();
-  st = {...p, plain:norm(p.word), guessed:new Set(), tried:new Set(), errors:0, state:"play", hinted:false, fresh:null};
+  const T = tier();
+  st = {...p, plain:norm(p.word), guessed:new Set(), tried:new Set(), errors:0, max:T.max, mult:T.mult, hintMode:T.hint, state:"play", hinted:false, fresh:null};
   $("cat").textContent = p.cat; $("catIcon").textContent = WORDS[p.cat].icon;
   $("kbd").hidden = false; $("result").hidden = true; $("actions").hidden = false;
-  $("hintBtn").disabled = false;
+  $("hintBtn").disabled = T.hint==="none";
+  $("hintTxt").textContent = T.hint==="free" ? "Dica grátis" : T.hint==="cost" ? "Dica (−1 chance)" : "Sem dica";
+  renderLevel();
   document.querySelectorAll(".k").forEach(k=>{k.className="k";k.disabled=false;});
   $("hang").classList.remove("sway"); $("guy").classList.remove("free"); $("rope").style.opacity=1;
   say(`A palavra tem ${[...st.plain].filter(c=>/[A-Z]/.test(c)).length} letras. Escolha uma!`);
@@ -485,10 +518,10 @@ function renderWord(){
 }
 function renderHearts(){
   const heart = `<path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.5 3 4.5 6.8 4.5c2.2 0 3.6 1.2 5.2 3 1.6-1.8 3-3 5.2-3 3.8 0 5.9 4 4.4 7.3C19.5 16.4 12 21 12 21z"/>`;
-  $("hearts").innerHTML = Array.from({length:MAX},(_,i)=>`<svg viewBox="0 0 24 24" class="${i>=MAX-st.errors?"lost":""}">${heart}</svg>`).join("");
-  $("hearts").setAttribute("aria-label",`${MAX-st.errors} de ${MAX} chances`);
+  $("hearts").innerHTML = Array.from({length:st.max},(_,i)=>`<svg viewBox="0 0 24 24" class="${i>=st.max-st.errors?"lost":""}">${heart}</svg>`).join("");
+  $("hearts").setAttribute("aria-label",`${st.max-st.errors} de ${st.max} chances`);
 }
-function renderParts(){ parts.forEach((p,i)=>p.classList.toggle("on", st.state==="win" || i<st.errors)); }
+function renderParts(){ const n = st.state==="win" ? 6 : Math.ceil(st.errors*6/st.max); parts.forEach((p,i)=>p.classList.toggle("on", i<n)); }
 function renderStats(){ $("points").textContent=stats.points; $("streak").textContent=stats.streak; }
 
 function say(t,cls=""){ const m=$("msg"); m.className="msg"; void m.offsetWidth; m.className="msg pop "+cls; m.textContent=t; }
@@ -503,7 +536,7 @@ function guess(l){
     say(count>1?`Boa! Tem ${count} letras ${l}.`:`Boa! Tem ${l}.`,"good");
   } else {
     st.errors++; key.classList.add("no");
-    const left = MAX-st.errors; if(left>0) snd.bad(left);
+    const left = st.max-st.errors; if(left>0) snd.bad(left);
     say(left>0?`Não tem ${l}. ${left===1?"Resta 1 chance!":`Restam ${left} chances.`}`:`Não tem ${l}.`,"bad");
     hurt();
   }
@@ -514,12 +547,14 @@ function hurt(){ const s=$("scene"); s.classList.remove("shake","flash"); void s
 function check(){
   const done = [...st.plain].every(c=>!/[A-Z]/.test(c)||st.guessed.has(c));
   if(done){
-    st.state="win"; st.gain = 10 + 5*(MAX-st.errors) + (st.hinted?0:5);
+    st.state="win"; st.gain = (10 + 5*(st.max-st.errors) + (st.hinted?0:5)) * st.mult;
+    const before = tier(); stats.level = (stats.level||1) + 1; const after = tier();
+    st.newTier = after!==before ? after : null;
     stats.points+=st.gain; stats.wins++; stats.games++; stats.streak++; stats.best=Math.max(stats.best,stats.streak);
     store.set("forca-stats",stats); pushScore();
-    $("rope").style.opacity=0; $("guy").classList.add("free"); snd.win();
+    $("rope").style.opacity=0; $("guy").classList.add("free"); snd.win(); setTimeout(()=>{ snd.levelUp(); showLevelUp(); }, 900); renderLevel();
     showResult(true); confetti();
-  } else if(st.errors>=MAX){
+  } else if(st.errors>=st.max){
     st.state="lose"; stats.games++; stats.streak=0; store.set("forca-stats",stats); pushScore();
     $("hang").classList.add("sway"); snd.bad(0); setTimeout(()=>snd.lose(),250); showResult(false);
   }
@@ -529,17 +564,41 @@ function showResult(win){
   $("resTitle").className = win?"win":"lose";
   $("resTitle").textContent = win ? "Você salvou o boneco!" : "Ah, não foi dessa vez";
   $("resText").textContent = win ? (stats.streak>1?`${stats.streak} acertos seguidos. ${st.hint}.`:`${st.hint}.`) : `A palavra era ${st.word}. ${st.hint}.`;
-  if(win){ const g=document.createElement("span"); g.className="gain"; g.textContent=`+${st.gain} pontos`; $("resText").prepend(g, document.createElement("br")); }
+  if(win){
+    const g=document.createElement("span"); g.className="gain"; g.textContent=`+${st.gain} pontos${st.mult>1?` (×${st.mult})`:""}`;
+    const up=document.createElement("b"); up.className="up";
+    up.textContent = st.newTier ? `Subiu para o nível ${stats.level}: ${st.newTier.name}! Agora vale ×${st.newTier.mult}.` : `Subiu para o nível ${stats.level}!`;
+    $("resText").prepend(g, document.createElement("br"), up, document.createElement("br"));
+  } else {
+    const k=document.createElement("b"); k.className="up"; k.textContent=`Você continua no nível ${stats.level}. Tente de novo!`;
+    $("resText").prepend(k, document.createElement("br"));
+  }
   say(win?"Parabéns!":"Fim de jogo", win?"good":"bad");
   setTimeout(()=>$("againBtn").focus(),50);
 }
 
 $("hintBtn").onclick = ()=>{
-  if(st.state!=="play"||st.hinted) return;
-  if(st.errors>=MAX-1){ say("Sem chances sobrando para pedir dica.","bad"); return; }
-  st.hinted=true; $("hintBtn").disabled=true; st.errors++; renderAll(); hurt(); snd.hint();
+  if(st.state!=="play"||st.hinted||st.hintMode==="none") return;
+  if(st.hintMode==="cost"){
+    if(st.errors>=st.max-1){ say("Sem chances sobrando para pedir dica.","bad"); return; }
+    st.errors++; hurt();
+  }
+  st.hinted=true; $("hintBtn").disabled=true; renderAll(); snd.hint();
   say(`Dica: ${st.hint}`);
 };
+function renderLevel(){
+  const T = tier(), lv = stats.level||1, next = TIERS.find(t=>t.from>lv);
+  $("lvlNum").textContent = `Nível ${lv}`;
+  $("lvlTier").textContent = `${T.name}${T.mult>1?` ×${T.mult}`:""}`;
+  $("lvl").style.setProperty("--tier", T.color);
+  $("lvlNext").textContent = next ? `${next.from-lv} ${next.from-lv===1?"vitória":"vitórias"} para ${next.name}` : "Nível máximo";
+}
+function showLevelUp(){
+  const el=$("levelUp"); el.hidden=true; void el.offsetWidth;
+  el.textContent = st.newTier ? `${st.newTier.name}!` : `Nível ${stats.level}`;
+  el.style.setProperty("--tier", (st.newTier||tier()).color);
+  el.hidden=false; clearTimeout(showLevelUp.t); showLevelUp.t=setTimeout(()=>el.hidden=true,2300);
+}
 $("newBtn").onclick = newGame;
 $("againBtn").onclick = newGame;
 
@@ -604,6 +663,7 @@ async function initOnline(){
     if(mine.exists){
       const r = mine.data();
       for(const k of ["points","wins","games","best"]) stats[k] = Math.max(stats[k]||0, Number(r[k])||0);
+        const lv=/^nivel (\d+)$/.exec(String(r.device||"")); if(lv) stats.level=Math.max(stats.level||1, +lv[1]); renderLevel();
       store.set("forca-stats",stats); renderStats();
     }
     pushScore(); renderRanking();
@@ -628,14 +688,14 @@ function fail(e){
 function pushScore(){
   if(!playerName) return;
   if(!net.db || !net.canWrite || !net.uid) return;
-  const body = {name:playerName.slice(0,24), device:String(device).slice(0,40), points:Math.round(stats.points), wins:stats.wins,
+  const body = {name:playerName.slice(0,24), device:`nivel ${stats.level||1}`, points:Math.round(stats.points), wins:stats.wins,
     games:stats.games, best:stats.best, updated:firebase.firestore.FieldValue.serverTimestamp()};
   net.chain = net.chain.then(()=>net.db.collection("ranking").doc(net.uid).set(body)).catch(e=>console.error("Salvar pontos:", e));
 }
 function renderRanking(){
   $("onlineDot").classList.toggle("on", net.status==="on" && net.canWrite);
   let rows = net.status==="on" && net.rows ? net.rows.slice() : [];
-  const meRow = {id:net.uid||"local", name:playerName||"Você", games:stats.games, device, points:stats.points, wins:stats.wins, me:true};
+  const meRow = {id:net.uid||"local", name:playerName||"Você", games:stats.games, device:`nivel ${stats.level||1}`, points:stats.points, wins:stats.wins, me:true};
   const i = rows.findIndex(r=>r.id===net.uid);
   if(i>=0) rows[i] = {...rows[i], ...meRow}; else rows.push(meRow);
   rows.sort((a,b)=>(Number(b.points)||0)-(Number(a.points)||0));
@@ -648,7 +708,7 @@ function renderRanking(){
     const p=document.createElement("span"); p.className="pos"; p.textContent=ix+1;
     const w=document.createElement("div"); w.className="who";
     const b=document.createElement("b"); b.textContent=String(r.name||"Jogador").slice(0,24) + (r.me?" (você)":"");
-    const s=document.createElement("small"); s.textContent=`${Number(r.wins)||0} ${Number(r.wins)===1?"vitória":"vitórias"} · ${Number(r.games)||0} partidas`;
+    const s=document.createElement("small"); const lv=/^nivel (\d+)$/.exec(String(r.device||"")); s.textContent=`${lv?`Nível ${lv[1]} · `:""}${Number(r.wins)||0} ${Number(r.wins)===1?"vitória":"vitórias"} · ${Number(r.games)||0} partidas`;
     w.append(b,s);
     const t=document.createElement("div"); t.className="pts"; t.textContent=Number(r.points)||0;
     const ts=document.createElement("small"); ts.textContent="pontos"; t.append(ts);
