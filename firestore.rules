@@ -4,14 +4,18 @@ service cloud.firestore {
     match /ranking/{uid} {
       // Todo mundo pode ver o ranking
       allow read: if true;
-      // Cada aparelho só altera a própria linha, com dados no formato certo
+      // Cada jogador só altera a própria linha, com dados no formato certo
       allow create, update: if request.auth != null
         && request.auth.uid == uid
-        && request.resource.data.keys().hasOnly(['name','device','points','wins','games','best','updated'])
+        && request.resource.data.keys().hasOnly(['name','device','points','wins','games','best','updated','week','wPoints','wWins','wGames'])
         && request.resource.data.name is string && request.resource.data.name.size() <= 24
         && request.resource.data.device is string && request.resource.data.device.size() <= 40
         && request.resource.data.points is int && request.resource.data.points >= 0 && request.resource.data.points <= 1000000
-        && request.resource.data.wins is int && request.resource.data.games is int && request.resource.data.best is int;
+        && request.resource.data.wins is int && request.resource.data.games is int && request.resource.data.best is int
+        && (!('week' in request.resource.data) || (request.resource.data.week is string && request.resource.data.week.size() <= 10))
+        && (!('wPoints' in request.resource.data) || (request.resource.data.wPoints is int && request.resource.data.wPoints >= 0 && request.resource.data.wPoints <= 1000000))
+        && (!('wWins' in request.resource.data) || request.resource.data.wWins is int)
+        && (!('wGames' in request.resource.data) || request.resource.data.wGames is int);
       allow delete: if false;
     }
   }
