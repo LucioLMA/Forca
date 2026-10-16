@@ -304,7 +304,7 @@ select.btn{appearance:none;-webkit-appearance:none;padding-right:16px}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js"></script>
+<script src="firebase-config.js?v=2"></script>
 <script>
 const WORDS = {
   "Animais": {icon:"🐾", list:[["CACHORRO","Melhor amigo do homem"],["ELEFANTE","Tem tromba"],["JACARÉ","Réptil do Pantanal"],["TAMANDUÁ","Come formigas"],["CAPIVARA","Maior roedor do mundo"],["BORBOLETA","Já foi lagarta"],["TUCANO","Bico grande e colorido"],["GIRAFA","Pescoço comprido"],["PINGUIM","Ave que não voa e nada bem"],["TARTARUGA","Carrega a casa nas costas"],["ARARA AZUL","Ave símbolo do cerrado"],["MICO LEÃO DOURADO","Primata da Mata Atlântica"],["CAVALO","Tem crina e ferradura"],["CORUJA","Vira a cabeça e caça à noite"],["GOLFINHO","Mamífero brincalhão do mar"]]},
@@ -590,7 +590,8 @@ $("nameDlg").addEventListener("click",e=>{ if(e.target.id==="nameDlg") closeName
 const net = {db:null, uid:null, canWrite:false, rows:null, status:"loading", chain:Promise.resolve()};
 async function initOnline(){
   const cfg = window.FIREBASE_CONFIG;
-  if(!window.firebase || !cfg || !cfg.apiKey || /^COLE/.test(cfg.apiKey)){ net.status="off"; renderRanking(); return; }
+  if(!window.firebase){ return fail({code:"sdk"}); }
+  if(!cfg || !cfg.apiKey || /^COLE/.test(cfg.apiKey)){ return fail({code:"config"}); }
   try{
     firebase.initializeApp(cfg);
     const cred = await firebase.auth().signInAnonymously();
@@ -598,7 +599,7 @@ async function initOnline(){
     net.db.collection("ranking").orderBy("points","desc").limit(50).onSnapshot(snap=>{
       net.rows = snap.docs.map(d=>({id:d.id, ...d.data()}));
       net.status = "on"; renderRanking();
-    }, err=>{ console.error("Ranking:", err); net.status="off"; renderRanking(); });
+    }, err=>{ console.error("Ranking:", err); fail(err); });
     const mine = await net.db.collection("ranking").doc(net.uid).get();
     if(mine.exists){
       const r = mine.data();
@@ -606,7 +607,23 @@ async function initOnline(){
       store.set("forca-stats",stats); renderStats();
     }
     pushScore(); renderRanking();
-  }catch(e){ console.error("Firebase:", e); net.status="off"; renderRanking(); }
+  }catch(e){ console.error("Firebase:", e); fail(e); }
+}
+function fail(e){
+  const c = String(e && e.code || "").replace(/^(auth|firestore)\//,"");
+  const msgs = {
+    "sdk":"O Firebase não carregou. Verifique a internet ou bloqueadores de anúncio.",
+    "config":"A chave do Firebase ainda não chegou. Espere uns minutos e recarregue a página.",
+    "operation-not-allowed":"Falta ativar o login Anônimo no Firebase (Authentication › Método de login).",
+    "admin-restricted-operation":"Falta ativar o login Anônimo no Firebase (Authentication › Método de login).",
+    "unauthorized-domain":"Falta adicionar luciolma.github.io em Authentication › Configurações › Domínios autorizados.",
+    "permission-denied":"As regras do Firestore ainda não foram publicadas (Firestore Database › Regras).",
+    "failed-precondition":"O Firestore Database ainda não foi criado.",
+    "not-found":"O Firestore Database ainda não foi criado.",
+    "network-request-failed":"Sem internet no momento."
+  };
+  net.err = (msgs[c] || "Não foi possível conectar ao ranking.") + (c ? ` (código: ${c})` : "");
+  net.status = "off"; renderRanking();
 }
 function pushScore(){
   if(!playerName) return;
@@ -639,7 +656,7 @@ function renderRanking(){
   });
   let note = "";
   if(net.status==="loading") note = "Carregando o ranking…";
-  else if(net.status==="off") note = "Sem conexão com o ranking agora. Seus pontos ficam salvos neste aparelho e entram no ranking quando a conexão voltar.";
+  else if(net.status==="off") note = (net.err ? net.err+" " : "") + "Seus pontos ficam salvos neste aparelho.";
   else if(!net.canWrite) note = "Você pode ver o ranking, mas seu acesso a esta página não permite salvar pontos nele. Seus pontos ficam salvos neste aparelho.";
   $("rankNote").textContent = note;
 }
