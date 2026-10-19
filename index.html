@@ -129,6 +129,32 @@ h1 span{color:var(--accent)}
 .embers circle:nth-child(3n){animation-delay:-2.1s}
 @keyframes ember{0%{opacity:0;transform:translate(0,0)}15%{opacity:1}100%{opacity:0;transform:translate(10px,-120px)}}
 .levelup small{display:block;font:700 .8rem var(--ui);opacity:.9;text-align:center}
+/* vitória: cai, comemora e sai andando */
+#skel,.joy{opacity:0}
+#hang.saved #guy{animation:drop 1.1s ease-out forwards, bob .34s ease-in-out 1.1s infinite alternate}
+#hang.saved #walker{animation:walk 4.6s ease-in 1.2s forwards}
+@keyframes drop{0%{transform:translateY(0)}35%{transform:translateY(21px)}55%{transform:translateY(4px)}75%{transform:translateY(21px)}87%{transform:translateY(15px)}100%{transform:translateY(20px)}}
+@keyframes bob{from{transform:translateY(20px)}to{transform:translateY(15px)}}
+@keyframes walk{to{transform:translateX(250px)}}
+#hang.saved .part[data-i="4"],#hang.saved .part[data-i="5"]{transform-box:view-box;transform-origin:160px 148px}
+#hang.saved .part[data-i="4"]{animation:legA .34s ease-in-out 1.1s infinite alternate}
+#hang.saved .part[data-i="5"]{animation:legB .34s ease-in-out 1.1s infinite alternate}
+@keyframes legA{from{transform:rotate(-24deg)}to{transform:rotate(22deg)}}
+@keyframes legB{from{transform:rotate(22deg)}to{transform:rotate(-24deg)}}
+#hang.saved .part[data-i="2"]{transform-box:view-box;transform-origin:156px 106px;animation:armSwing .34s ease-in-out 1.1s infinite alternate}
+#hang.saved .part[data-i="3"]{transform-box:view-box;transform-origin:164px 106px;animation:armWave .28s ease-in-out .5s infinite alternate}
+@keyframes armSwing{from{transform:rotate(-18deg)}to{transform:rotate(26deg)}}
+@keyframes armWave{from{transform:rotate(-100deg)}to{transform:rotate(-135deg)}}
+#hang.saved .joy{opacity:1}
+#hang.saved .joy text{animation:joy 1.3s ease-out .4s infinite}
+#hang.saved .joy text:nth-child(2){animation-delay:.85s}
+#hang.saved .joy text:nth-child(3){animation-delay:1.2s}
+@keyframes joy{0%{opacity:0;transform:translateY(0)}20%{opacity:1}100%{opacity:0;transform:translateY(-26px)}}
+/* derrota: vira esqueleto */
+#hang.dead .part{opacity:0;transition:opacity .45s .5s}
+#hang.dead #skel{opacity:1;transition:opacity .5s .55s}
+#hang.dead .jaw{animation:jaw .22s ease-in-out 1.1s 8 alternate}
+@keyframes jaw{to{transform:translateY(2.5px)}}
 .period{position:absolute;right:12px;bottom:76px;background:var(--surface);color:var(--ink);border-radius:999px;padding:5px 11px 5px 8px;
   font-weight:800;font-size:.8rem;display:flex;align-items:center;gap:6px;box-shadow:0 2px 8px rgba(0,0,0,.12)}
 .part{transform-box:fill-box;transform-origin:center top;transform:scale(0);opacity:0;
@@ -149,7 +175,7 @@ h1 span{color:var(--accent)}
 .lvl b{font:800 1.05rem var(--display)}
 .lvl span{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--tier,#1f9d55);filter:brightness(1.05)}
 .lvl small{font-size:.68rem;font-weight:700;color:var(--muted)}
-.levelup{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);background:var(--tier,#ff6b3d);color:#fff;
+.levelup{position:absolute;left:50%;top:21%;transform:translate(-50%,-50%);background:var(--tier,#ff6b3d);color:#fff;
   font:800 1.7rem var(--display);padding:8px 22px;border-radius:18px;box-shadow:0 8px 24px rgba(0,0,0,.25);pointer-events:none;
   white-space:nowrap;animation:lvlpop 2.2s ease forwards}
 @keyframes lvlpop{0%{transform:translate(-50%,-50%) scale(.4);opacity:0}15%{transform:translate(-50%,-50%) scale(1.12);opacity:1}
@@ -408,7 +434,7 @@ select.btn{appearance:none;-webkit-appearance:none;padding-right:16px}
       </g>
       <g id="hang">
         <path id="rope" d="M160 32 V64" style="stroke:var(--rope)" stroke-width="4" stroke-linecap="round" fill="none"/>
-        <g id="guy">
+        <g id="walker"><g id="guy">
           <!-- pernas -->
           <path class="part" data-i="4" d="M160 148 L147 186" stroke="#3d4f7a" stroke-width="9" stroke-linecap="round" fill="none"/>
           <path class="part" data-i="5" d="M160 148 L173 186" stroke="#3d4f7a" stroke-width="9" stroke-linecap="round" fill="none"/>
@@ -423,7 +449,26 @@ select.btn{appearance:none;-webkit-appearance:none;padding-right:16px}
             <path d="M142 74 Q146 58 162 60 Q176 61 178 74 Q170 66 160 68 Q150 66 142 74 Z" fill="#5a3a24"/>
             <g id="face"></g>
           </g>
-        </g>
+          <!-- esqueleto (aparece na derrota) -->
+          <g id="skel" fill="#f5f1e6" stroke="#8f887a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M156 150 L149 184 M164 150 L171 184" stroke-width="5" stroke="#f5f1e6"/>
+            <path d="M156 150 L149 184 M164 150 L171 184" fill="none"/>
+            <ellipse cx="147" cy="187" rx="5" ry="2.5"/><ellipse cx="173" cy="187" rx="5" ry="2.5"/>
+            <path d="M157 108 L141 130 M163 108 L179 130" stroke-width="4.5" stroke="#f5f1e6"/>
+            <path d="M157 108 L141 130 M163 108 L179 130" fill="none"/>
+            <circle cx="140" cy="132" r="3"/><circle cx="180" cy="132" r="3"/>
+            <path d="M150 104 H170" stroke-width="4" stroke="#f5f1e6"/><path d="M150 104 H170" fill="none"/>
+            <path d="M160 98 V146" stroke-width="5" stroke="#f5f1e6"/><path d="M160 98 V146" fill="none"/>
+            <path d="M151 112 Q160 117 169 112 M150 120 Q160 125 170 120 M151 128 Q160 133 169 128 M153 136 Q160 140 167 136" fill="none" stroke-width="3" stroke="#f5f1e6"/>
+            <path d="M151 112 Q160 117 169 112 M150 120 Q160 125 170 120 M151 128 Q160 133 169 128 M153 136 Q160 140 167 136" fill="none" stroke-width="1"/>
+            <path d="M150 146 Q160 140 170 146 L167 154 Q160 151 153 154 Z"/>
+            <path d="M143 80 a17 17 0 1 1 34 0 q0 7 -5 10 h-24 q-5 -3 -5 -10 Z"/>
+            <ellipse cx="153" cy="80" rx="4.6" ry="5" fill="#2a2420" stroke="none"/><ellipse cx="167" cy="80" rx="4.6" ry="5" fill="#2a2420" stroke="none"/>
+            <path d="M160 85 l-2 4 h4 Z" fill="#2a2420" stroke="none"/>
+            <g class="jaw"><path d="M150 90 h20 v5 q-10 4 -20 0 Z"/><path d="M155 90 v4 M160 90 v4.5 M165 90 v4" stroke-width="1"/></g>
+          </g>
+          <g class="joy" fill="#ff4d6d"><text x="178" y="66" font-size="11">♥</text><text x="138" y="60" font-size="9">♥</text><text x="184" y="84" font-size="8">♪</text></g>
+        </g></g>
       </g>
     </svg>
     <canvas id="confetti"></canvas>
@@ -583,6 +628,8 @@ const snd = (()=>{
       [2093,2637,3136].forEach((f,i)=>tone(f,.55+i*.08,.3,{vol:.05})); },
     lose(){ [392,370,349.2].forEach((f,i)=>tone(f,i*.32,.3,{type:"sawtooth",vol:.07}));
       tone(329.6,.96,.9,{type:"sawtooth",vol:.07,to:300}); buzz([100,80,200]); },
+    steps(){ for(let i=0;i<9;i++) noise(i*.34,.05,.08,i%2?700:520); [784,988,1175,1568].forEach((f,i)=>tone(f,.2+i*.5,.12,{type:"triangle",vol:.07})); },
+    bones(){ for(let i=0;i<8;i++){ tone(i%2?1900:1500,i*.22,.04,{type:"square",vol:.05}); noise(i*.22,.03,.08,3500); } },
     tick(){ tone(1400,0,.05,{type:"square",vol:.05}); },
     levelUp(){ [659.25,783.99,987.77,1318.5].forEach((f,i)=>tone(f,i*.08,.18,{type:"square",vol:.06})); tone(1975.5,.34,.4,{vol:.08}); },
     get on(){ return on; },
@@ -692,7 +739,7 @@ function newGame(){
   $("hintTxt").textContent = T.hint==="free" ? "Dica grátis" : T.hint==="cost" ? "Dica (−1 chance)" : "Sem dica";
   renderLevel();
   document.querySelectorAll(".k").forEach(k=>{k.className="k";k.disabled=false;});
-  $("hang").classList.remove("sway"); $("guy").classList.remove("free"); $("rope").style.opacity=1;
+  $("hang").classList.remove("sway","saved","dead"); $("guy").classList.remove("free"); $("rope").style.opacity=1;
   renderPeriod();
   const nLetters = [...st.plain].filter(c=>/[A-Z]/.test(c)).length;
   say(playerName && !greeted ? `${period().greet}, ${playerName}! A palavra tem ${nLetters} letras.` : `A palavra tem ${nLetters} letras. Escolha uma!`);
@@ -759,11 +806,11 @@ function check(){
     rollWeek(); stats.wPoints+=st.gain; stats.wWins++; stats.wGames++;
     stats.points+=st.gain; stats.wins++; stats.games++; stats.streak++; stats.best=Math.max(stats.best,stats.streak);
     store.set("forca-stats",stats); pushScore();
-    $("rope").style.opacity=0; $("guy").classList.add("free"); snd.win(); setTimeout(()=>{ snd.levelUp(); showLevelUp(); }, 900); renderLevel();
+    $("rope").style.opacity=0; $("hang").classList.add("saved"); snd.win(); setTimeout(()=>{ if(st.state==="win") snd.steps(); }, 1250); setTimeout(()=>{ snd.levelUp(); showLevelUp(); }, 900); renderLevel();
     showResult(true); confetti();
   } else if(st.errors>=st.max){
     stopTimer(); st.state="lose"; rollWeek(); stats.wGames++; stats.games++; stats.streak=0; store.set("forca-stats",stats); pushScore();
-    $("hang").classList.add("sway"); snd.bad(0); setTimeout(()=>snd.lose(),250); showResult(false);
+    $("hang").classList.add("sway","dead"); snd.bad(0); setTimeout(()=>{ if(st.state==="lose") snd.bones(); }, 1100); setTimeout(()=>snd.lose(),250); showResult(false);
   }
 }
 function showResult(win){
