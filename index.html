@@ -101,6 +101,34 @@ h1 span{color:var(--accent)}
 @keyframes pulse{50%{transform:scale(1.08)}}
 .result .tbonus{color:var(--good);font-weight:800}
 .result .revealcat{color:var(--muted);font-weight:700}
+.th{display:none}
+.scene[data-tier="0"] .th0,.scene[data-tier="1"] .th1,.scene[data-tier="2"] .th2,.scene[data-tier="3"] .th3,
+.scene[data-tier="4"] .th4,.scene[data-tier="5"] .th5,.scene[data-tier="6"] .th6{display:inline}
+.dim{filter:brightness(var(--dim,1))}
+.scene[data-period="noite"]{--dim:.62} .scene[data-period="madrugada"]{--dim:.5}
+.tint{fill:var(--tint,#000);opacity:var(--tintA,0);transition:opacity 1s}
+.scene[data-tier="3"]{--tint:#ff9a3c;--tintA:.14}
+.scene[data-tier="5"]{--tint:#bfe6ff;--tintA:.2}
+.scene[data-tier="6"]{--tint:#b3261e;--tintA:.4}
+.land.swap{animation:landin .9s ease}
+@keyframes landin{0%{opacity:0;transform:translateY(14px)}100%{opacity:1;transform:none}}
+.flame{transform-box:fill-box;transform-origin:50% 100%;animation:flick .35s ease-in-out infinite alternate}
+.flame.f2{animation-duration:.27s}
+@keyframes flick{0%{transform:scale(1,1)}100%{transform:scale(.85,1.15) skewX(4deg)}}
+.wave{animation:wave 2.4s linear infinite}
+@keyframes wave{to{transform:translateX(40px)}}
+.snow circle{animation:snow 7s linear infinite}
+.snow circle:nth-child(3n){animation-duration:9s;animation-delay:-3s}
+.snow circle:nth-child(3n+1){animation-duration:6s;animation-delay:-5s}
+.snow circle:nth-child(4n){animation-delay:-1.5s}
+@keyframes snow{to{transform:translate(14px,330px)}}
+.lava{animation:lava 1.8s ease-in-out infinite alternate}
+@keyframes lava{0%{opacity:.75}100%{opacity:1}}
+.embers circle{animation:ember 3.2s ease-out infinite;opacity:0}
+.embers circle:nth-child(2n){animation-delay:-1.2s;animation-duration:4s}
+.embers circle:nth-child(3n){animation-delay:-2.1s}
+@keyframes ember{0%{opacity:0;transform:translate(0,0)}15%{opacity:1}100%{opacity:0;transform:translate(10px,-120px)}}
+.levelup small{display:block;font:700 .8rem var(--ui);opacity:.9;text-align:center}
 .period{position:absolute;right:12px;bottom:76px;background:var(--surface);color:var(--ink);border-radius:999px;padding:5px 11px 5px 8px;
   font-weight:800;font-size:.8rem;display:flex;align-items:center;gap:6px;box-shadow:0 2px 8px rgba(0,0,0,.12)}
 .part{transform-box:fill-box;transform-origin:center top;transform:scale(0);opacity:0;
@@ -262,14 +290,121 @@ select.btn{appearance:none;-webkit-appearance:none;padding-right:16px}
       <line class="shoot" x1="0" y1="0" x2="26" y2="9" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/><g class="skybody"><circle cx="268" cy="62" r="34" class="glow" style="fill:var(--sun)"/><circle cx="268" cy="62" r="20" style="fill:var(--sun)"/><circle cx="277" cy="56" r="17" class="moonshade" style="fill:var(--sky1)"/></g>
       <g class="cloud" fill="#ffffff" style="opacity:calc(.85*var(--clouds,1))"><ellipse cx="40" cy="58" rx="22" ry="9"/><ellipse cx="55" cy="51" rx="13" ry="10"/><ellipse cx="30" cy="53" rx="10" ry="7"/></g>
       <g class="cloud c2" fill="#ffffff" style="opacity:calc(.7*var(--clouds,1))"><ellipse cx="20" cy="100" rx="18" ry="7"/><ellipse cx="32" cy="95" rx="10" ry="8"/></g>
-      <path d="M-10 230 V190 Q80 170 170 188 T330 182 V230 Z" style="fill:var(--hill2)"/>
-      <path d="M-10 230 V205 Q90 188 200 204 T330 200 V230 Z" style="fill:var(--hill)"/>
-      <!-- forca de madeira -->
-      <g style="stroke:var(--wood2)" stroke-width="2">
-        <rect x="38" y="200" width="104" height="10" rx="3" style="fill:var(--wood)"/>
-        <rect x="64" y="24" width="12" height="178" rx="3" style="fill:var(--wood)"/>
-        <rect x="58" y="22" width="114" height="11" rx="3" style="fill:var(--wood)"/>
-        <path d="M76 62 L106 33 L114 33 L76 71 Z" style="fill:var(--wood)"/>
+      <rect class="tint" width="320" height="230"/>
+      <g class="land" id="land">
+        <!-- 0 e 1: campo verde -->
+        <g class="th th0 th1">
+          <path d="M-10 230 V190 Q80 170 170 188 T330 182 V230 Z" style="fill:var(--hill2)"/>
+          <path d="M-10 230 V205 Q90 188 200 204 T330 200 V230 Z" style="fill:var(--hill)"/>
+        </g>
+        <!-- 0 Fácil: forca de madeira -->
+        <g class="th th0 dim" style="stroke:var(--wood2)" stroke-width="2">
+          <rect x="38" y="200" width="104" height="10" rx="3" style="fill:var(--wood)"/>
+          <rect x="64" y="24" width="12" height="178" rx="3" style="fill:var(--wood)"/>
+          <rect x="58" y="22" width="114" height="11" rx="3" style="fill:var(--wood)"/>
+          <path d="M76 62 L106 33 L114 33 L76 71 Z" style="fill:var(--wood)"/>
+        </g>
+        <!-- 1 Médio: árvore da fazenda -->
+        <g class="th th1 dim">
+          <g fill="#c8a165" stroke="#8a6a3a" stroke-width="1.5">
+            <rect x="214" y="168" width="6" height="30" rx="1"/><rect x="250" y="166" width="6" height="30" rx="1"/><rect x="286" y="167" width="6" height="30" rx="1"/><rect x="318" y="168" width="6" height="30" rx="1"/>
+            <rect x="208" y="174" width="120" height="5" rx="2"/><rect x="208" y="186" width="120" height="5" rx="2"/>
+          </g>
+          <path d="M44 210 Q58 150 56 58 L82 54 Q82 150 98 210 Z" fill="#7a4b2a" stroke="#5a361c" stroke-width="2"/>
+          <path d="M70 62 Q110 28 176 30" stroke="#5a361c" stroke-width="14" stroke-linecap="round" fill="none"/>
+          <path d="M70 62 Q110 28 176 30" stroke="#7a4b2a" stroke-width="10" stroke-linecap="round" fill="none"/>
+          <g fill="#3f8a2e"><circle cx="34" cy="40" r="30"/><circle cx="78" cy="18" r="32"/><circle cx="122" cy="12" r="26"/><circle cx="16" cy="72" r="20"/></g>
+          <g fill="#56a83f"><circle cx="50" cy="30" r="22"/><circle cx="96" cy="8" r="22"/><circle cx="28" cy="58" r="14"/><circle cx="182" cy="25" r="9"/></g>
+        </g>
+        <!-- 2 Difícil: castelo de pedra -->
+        <g class="th th2 dim">
+          <path d="M196 196 V128 h10 v-10 h12 v10 h12 v-10 h12 v10 h12 v-10 h12 v10 h12 V196 Z" fill="#a8a39a" stroke="#7d786f" stroke-width="2"/>
+          <path d="M266 196 V96 h8 v-10 h10 v10 h10 v-10 h10 v10 h8 V196 Z" fill="#b3aea4" stroke="#7d786f" stroke-width="2"/>
+          <rect x="283" y="118" width="6" height="16" rx="3" fill="#3b3833"/><rect x="221" y="146" width="6" height="14" rx="3" fill="#3b3833"/><rect x="246" y="146" width="6" height="14" rx="3" fill="#3b3833"/>
+          <path d="M-10 230 V196 H330 V230 Z" fill="#7f8a6f"/>
+          <g fill="#6c765d"><ellipse cx="20" cy="212" rx="12" ry="4"/><ellipse cx="70" cy="222" rx="14" ry="4"/><ellipse cx="190" cy="214" rx="13" ry="4"/><ellipse cx="250" cy="224" rx="12" ry="4"/><ellipse cx="300" cy="210" rx="11" ry="4"/></g>
+          <g fill="#9c968c" stroke="#6f6a61" stroke-width="2">
+            <rect x="30" y="196" width="122" height="14" rx="2"/><rect x="42" y="186" width="98" height="12" rx="2"/>
+            <rect x="60" y="24" width="20" height="164"/>
+            <rect x="56" y="19" width="120" height="14" rx="2"/>
+            <path d="M80 70 L112 33 L124 33 L80 84 Z"/>
+          </g>
+          <path d="M60 44 h20 M60 64 h20 M60 84 h20 M60 104 h20 M60 124 h20 M60 144 h20 M60 164 h20 M70 24 v20 M70 64 v20 M70 104 v20 M70 144 v20 M88 19 v14 M118 19 v14 M148 19 v14" stroke="#6f6a61" stroke-width="1.5"/>
+          <rect x="82" y="96" width="5" height="16" fill="#5b4632"/>
+        </g>
+        <g class="th th2"><path class="flame" d="M84.5 96 q-6 -7 0 -16 q6 9 0 16 Z" fill="#ffb03a"/><path class="flame f2" d="M84.5 95 q-3 -4 0 -9 q3 5 0 9 Z" fill="#fff1a8"/></g>
+        <!-- 3 Mestre: faroeste -->
+        <g class="th th3 dim">
+          <path d="M188 200 V146 q4 -8 18 -8 h70 q12 0 16 8 V200 Z" fill="#c4713f"/>
+          <path d="M244 200 V160 q3 -6 12 -6 h40 q10 0 14 8 V200 Z" fill="#b0603a"/>
+          <path d="M-10 230 V198 Q60 186 150 196 T330 192 V230 Z" fill="#d9a352"/>
+          <path d="M-10 230 V210 Q100 200 210 210 T330 206 V230 Z" fill="#e8bd6d"/>
+          <g fill="#3f8f4a" stroke="#2c6b35" stroke-width="1.5" transform="translate(-262 4)"><rect x="276" y="150" width="12" height="56" rx="6"/><path d="M276 176 h-10 q-4 0 -4 -4 v-12 a4 4 0 0 1 8 0 v8 h6 Z"/><path d="M288 168 h9 q4 0 4 -4 v-10 a4 4 0 0 0 -8 0 v6 h-5 Z"/></g>
+          <g fill="#5b3a22" stroke="#3a2412" stroke-width="2">
+            <rect x="34" y="186" width="104" height="8" rx="1"/><rect x="40" y="192" width="7" height="18"/><rect x="124" y="192" width="7" height="18"/>
+            <rect x="64" y="22" width="13" height="166"/>
+            <rect x="58" y="20" width="116" height="12" rx="1"/>
+            <path d="M77 66 L106 32 L116 32 L77 78 Z"/>
+          </g>
+          <g fill="#2f2f33"><rect x="62" y="40" width="17" height="4"/><rect x="62" y="150" width="17" height="4"/><rect x="150" y="18" width="4" height="16"/><rect x="88" y="18" width="4" height="16"/><circle cx="70.5" cy="26" r="2"/></g>
+        </g>
+        <!-- 4 Especialista: navio pirata -->
+        <g class="th th4 dim">
+          <path d="M-10 230 V194 H330 V230 Z" fill="#1d5f99"/>
+          <path d="M-14 184 L132 184 Q146 184 150 172 L156 172 Q154 200 132 216 L4 216 Q-6 204 -14 196 Z" fill="#6b3f22" stroke="#45260f" stroke-width="2"/>
+          <path d="M-10 194 H146 M-6 204 H138" stroke="#4e2c14" stroke-width="2"/>
+          <path d="M-12 176 H150 M0 176 v8 M30 176 v8 M60 176 v8 M90 176 v8 M120 176 v8 M148 172 v-6" stroke="#4e2c14" stroke-width="2.5" stroke-linecap="round"/>
+          <rect x="64" y="6" width="12" height="178" rx="2" fill="#8a5a34" stroke="#5a361c" stroke-width="2"/>
+          <rect x="40" y="22" width="140" height="9" rx="4" fill="#8a5a34" stroke="#5a361c" stroke-width="2"/>
+          <path d="M44 31 Q90 44 132 31" fill="#efe4c8" stroke="#bfae86" stroke-width="2"/>
+          <path d="M76 6 h26 l-4 7 l4 7 h-26 Z" fill="#1d1d22"/><circle cx="86" cy="12" r="3" fill="#ffffff"/>
+          <path d="M76 120 L60 182 M76 120 L92 182" stroke="#4e2c14" stroke-width="1.5"/>
+        </g>
+        <g class="th th4"><path class="wave" d="M-40 196 q10 -5 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 V204 H-40 Z" fill="#3a8fd6" opacity=".8"/></g>
+        <!-- 5 Lenda: montanha gelada -->
+        <g class="th th5 dim">
+          <path d="M150 200 L218 96 L262 158 L292 120 L340 200 Z" fill="#8299b3"/>
+          <path d="M218 96 L232 118 L222 114 L212 124 L204 118 Z M292 120 L304 138 L294 134 L286 140 Z" fill="#ffffff"/>
+          <path d="M-10 230 V194 Q80 180 170 192 T330 188 V230 Z" fill="#dfeaf3"/>
+          <path d="M-10 230 V208 Q90 196 200 208 T330 204 V230 Z" fill="#f6fafd"/>
+          <g fill="#c9ecf8" stroke="#86c6de" stroke-width="2" opacity=".95">
+            <rect x="36" y="198" width="108" height="10" rx="3"/>
+            <rect x="63" y="24" width="14" height="176" rx="4"/>
+            <rect x="57" y="21" width="116" height="12" rx="4"/>
+            <path d="M77 64 L106 33 L116 33 L77 76 Z"/>
+          </g>
+          <path d="M67 34 v150 M62 25 h100" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+          <path d="M84 33 l3 9 l3 -9 Z M100 33 l2.5 7 l2.5 -7 Z M128 33 l3 10 l3 -10 Z M146 33 l2.5 6 l2.5 -6 Z" fill="#c9ecf8" stroke="#86c6de" stroke-width="1"/>
+        </g>
+        <g class="th th5 snow" fill="#ffffff">
+          <circle cx="20" cy="-6" r="2"/><circle cx="60" cy="-30" r="1.6"/><circle cx="110" cy="-12" r="2.2"/><circle cx="150" cy="-48" r="1.5"/>
+          <circle cx="200" cy="-20" r="2"/><circle cx="240" cy="-60" r="1.7"/><circle cx="285" cy="-8" r="2.1"/><circle cx="310" cy="-40" r="1.5"/>
+          <circle cx="40" cy="-80" r="1.8"/><circle cx="180" cy="-90" r="2"/><circle cx="265" cy="-100" r="1.6"/><circle cx="90" cy="-110" r="1.9"/>
+        </g>
+        <!-- 6 Imortal: vulcão -->
+        <g class="th th6 dim">
+          <path d="M160 202 L224 96 H262 L330 202 Z" fill="#3a2a2a"/>
+          <path d="M-10 230 V196 Q80 186 170 196 T330 192 V230 Z" fill="#2b2222"/>
+        </g>
+        <g class="th th6">
+          <path class="lava" d="M224 96 H262 L256 104 Q250 130 258 160 Q244 132 240 104 Q236 136 224 168 Q230 130 228 104 Z" fill="#ff6a1a"/>
+          <ellipse class="lava" cx="243" cy="96" rx="20" ry="4" fill="#ffb03a"/>
+          <path class="lava" d="M-10 222 Q60 210 120 218 T250 214 T330 220 V230 H-10 Z" fill="#ff5a12"/>
+          <path d="M-10 224 Q60 214 120 221 T250 217 T330 223" stroke="#ffd166" stroke-width="2" fill="none" opacity=".8"/>
+        </g>
+        <g class="th th6 dim">
+          <g fill="#25252b" stroke="#ff7a2a" stroke-width="1.6">
+            <rect x="36" y="196" width="108" height="10" rx="2"/>
+            <rect x="63" y="22" width="14" height="176" rx="2"/>
+            <rect x="57" y="19" width="118" height="13" rx="2"/>
+            <path d="M77 64 L106 32 L116 32 L77 76 Z"/>
+          </g>
+          <g fill="#ff9a3c"><circle cx="70" cy="40" r="1.8"/><circle cx="70" cy="100" r="1.8"/><circle cx="70" cy="160" r="1.8"/><circle cx="100" cy="25.5" r="1.8"/><circle cx="140" cy="25.5" r="1.8"/></g>
+        </g>
+        <g class="th th6 embers" fill="#ffb03a">
+          <circle cx="40" cy="226" r="1.6"/><circle cx="110" cy="226" r="1.3"/><circle cx="170" cy="226" r="1.8"/><circle cx="215" cy="226" r="1.4"/>
+          <circle cx="250" cy="100" r="1.6"/><circle cx="238" cy="100" r="1.3"/><circle cx="290" cy="226" r="1.5"/><circle cx="80" cy="226" r="1.2"/>
+        </g>
       </g>
       <g id="hang">
         <path id="rope" d="M160 32 V64" style="stroke:var(--rope)" stroke-width="4" stroke-linecap="round" fill="none"/>
@@ -388,6 +523,7 @@ const TIERS = [
   {name:"Lenda",   from:16, max:3, mult:6, hint:"none", diff:3, color:"#db2777", secret:true, time:90},
   {name:"Imortal", from:20, max:3, mult:8, hint:"none", diff:3, color:"#b8860b", secret:true, time:60}
 ];
+const SCENES = ["Campo","Árvore da fazenda","Castelo de pedra","Faroeste","Navio pirata","Montanha gelada","Vulcão"];
 const tierOf = lv => TIERS.filter(t=>lv>=t.from).pop();
 const tier = () => tierOf(stats.level);
 function wordLevel(w){ const p=norm(w).replace(/[^A-Z]/g,""); const u=new Set(p).size;
@@ -546,7 +682,8 @@ function pick(){
 function newGame(){
   snd.start();
   const p = pick();
-  const T = tier();
+  const T = tier(), ti = String(TIERS.indexOf(T)), sc = $("scene");
+  if(sc.dataset.tier!==ti){ sc.dataset.tier = ti; const l=$("land"); l.classList.remove("swap"); void l.getBoundingClientRect(); l.classList.add("swap"); }
   st = {...p, plain:norm(p.word), guessed:new Set(), tried:new Set(), errors:0, max:T.max, mult:T.mult, hintMode:T.hint, state:"play", hinted:false, fresh:null, secret:!!T.secret, time:T.time||0};
   $("cat").textContent = st.secret ? "Categoria secreta" : p.cat; $("catIcon").textContent = st.secret ? "❓" : WORDS[p.cat].icon;
   startTimer();
@@ -637,7 +774,7 @@ function showResult(win){
   if(win){
     const g=document.createElement("span"); g.className="gain"; g.textContent=`+${st.gain} pontos${st.mult>1?` (×${st.mult})`:""}`;
     const up=document.createElement("b"); up.className="up";
-    up.textContent = st.newTier ? `Subiu para o nível ${stats.level}: ${st.newTier.name}! Agora vale ×${st.newTier.mult}.` : `Subiu para o nível ${stats.level}!`;
+    up.textContent = st.newTier ? `Subiu para o nível ${stats.level}: ${st.newTier.name}! Agora vale ×${st.newTier.mult}. Novo cenário: ${SCENES[TIERS.indexOf(st.newTier)]}.` : `Subiu para o nível ${stats.level}!`;
     $("resText").prepend(g, document.createElement("br"), up, document.createElement("br"));
     if(st.timeBonus){ const tb=document.createElement("span"); tb.className="tbonus"; tb.textContent=`Inclui bônus de tempo: +${st.timeBonus} antes da multiplicação`; up.before(tb, document.createElement("br")); }
   } else {
@@ -704,7 +841,8 @@ function renderLevel(){
 }
 function showLevelUp(){
   const el=$("levelUp"); el.hidden=true; void el.offsetWidth;
-  el.textContent = st.newTier ? `${st.newTier.name}!` : `Nível ${stats.level}`;
+  if(st.newTier){ const sm=document.createElement("small"); sm.textContent=`Novo cenário: ${SCENES[TIERS.indexOf(st.newTier)]}`; el.replaceChildren(document.createTextNode(`${st.newTier.name}!`), sm); }
+  else el.textContent = `Nível ${stats.level}`;
   el.style.setProperty("--tier", (st.newTier||tier()).color);
   el.hidden=false; clearTimeout(showLevelUp.t); showLevelUp.t=setTimeout(()=>el.hidden=true,2300);
 }
